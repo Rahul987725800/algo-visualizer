@@ -1,0 +1,20 @@
+.container {
+  text-align: center;
+  width: 80%;
+  margin: auto;
+}
+.grid {
+}
+.row {
+  display: flex;
+}
+.block {
+  border: 1px solid rgb(175, 216, 248);
+  padding: 11px;
+}
+.source {
+}
+.destination {
+}
+.wall {
+}

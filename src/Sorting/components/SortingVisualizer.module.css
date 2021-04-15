@@ -1,0 +1,32 @@
+.container {
+  text-align: center;
+  width: 80%;
+  margin: auto;
+}
+.visualizerBlock {
+  height: 70vh;
+  overflow: scroll;
+  border: 1px solid blue;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0 5%;
+}
+.barWrapper {
+  flex: 1;
+}
+.bar {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.number {
+  height: 4vh;
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.buttons button {
+  margin: 1rem;
+}

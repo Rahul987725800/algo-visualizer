@@ -1,0 +1,21 @@
+.block {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  margin: auto;
+}
+.rod {
+  height: 30vh;
+  width: 1rem;
+  border-radius: 4px;
+  background-color: rgb(8, 8, 8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+.disk {
+  height: 15px;
+  margin-top: 1px;
+  border-radius: 5px;
+}

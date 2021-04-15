@@ -1,0 +1,18 @@
+.solutions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.solution {
+  margin: 2rem 0;
+}
+.row {
+  display: flex;
+  justify-content: center;
+}
+.block {
+  border: 1px solid rgba(177, 177, 177, 0.452);
+}
+.block img {
+  max-width: 100%;
+}

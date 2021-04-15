@@ -1,0 +1,14 @@
+.container {
+  text-align: center;
+  width: 80%;
+  margin: auto;
+}
+.array {
+  display: flex;
+  justify-content: space-evenly;
+}
+.array .block {
+  border: 1px solid black;
+  width: 48px;
+  padding: 0.5rem;
+}
