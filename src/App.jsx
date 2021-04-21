@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import BackTrackingVisualizer from './BackTracking/components/BackTrackingVisualizer';
 import GraphVisualizer from './Graph/components/GraphVisualizer';
+import GraphAdvancedVisualizer from './GraphAdvanced/components/GraphAdvancedVisualizer';
 import RecursionVisualizer from './Recursion/components/RecursionVisualizer';
 import SearchingVisualizer from './Searching/components/SearchingVisualizer';
 import SortingVisualizer from './Sorting/components/SortingVisualizer';
 
 function App() {
-  const [activeVisualizer, setActiveVisualizer] = useState('recursion');
+  const [activeVisualizer, setActiveVisualizer] = useState('advGraphs');
   const visualizer = () => {
     switch (activeVisualizer) {
       case 'sorting':
@@ -19,6 +20,8 @@ function App() {
         return <BackTrackingVisualizer />;
       case 'recursion':
         return <RecursionVisualizer />;
+      case 'advGraph':
+        return <GraphAdvancedVisualizer />;
       default:
         return <div></div>;
     }
@@ -37,6 +40,9 @@ function App() {
       </div>
       <div onClick={() => setActiveVisualizer('recursion')}>
         Recursion Algorithms
+      </div>
+      <div onClick={() => setActiveVisualizer('advGraphs')}>
+        Advanced Graphs
       </div>
       {visualizer()}
     </div>

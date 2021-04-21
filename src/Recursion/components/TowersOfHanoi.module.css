@@ -3,6 +3,8 @@
   justify-content: space-between;
   width: 50%;
   margin: auto;
+  padding: 2rem 7rem;
+  border: 1px solid black;
 }
 .rod {
   height: 30vh;
@@ -14,8 +16,13 @@
   align-items: center;
   justify-content: flex-end;
 }
+
 .disk {
   height: 15px;
   margin-top: 1px;
   border-radius: 5px;
+}
+.rodName {
+  margin-top: 1rem;
+  font-weight: bold;
 }

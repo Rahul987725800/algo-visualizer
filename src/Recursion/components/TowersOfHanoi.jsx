@@ -16,7 +16,7 @@ function getDisks(n) {
 const initialVisualizerState = () => {
   return {
     active: false,
-    delay: 500,
+    delay: 15000,
     timeOuts: [],
   };
 };
@@ -72,14 +72,24 @@ function TowersOfHanoi() {
   }, [gamePaused]);
   useEffect(() => {
     setDisks(getDisks(nDisks));
+    reset();
   }, [nDisks]);
   return (
     <div>
       <h3>Towers of Hanoi</h3>
       <div className={styles.block}>
-        <div className={styles.rod}>{disksToShow('A')}</div>
-        <div className={styles.rod}>{disksToShow('B')}</div>
-        <div className={styles.rod}>{disksToShow('C')}</div>
+        <div>
+          <div className={styles.rod}>{disksToShow('A')}</div>
+          <div className={styles.rodName}>A</div>
+        </div>
+        <div>
+          <div className={styles.rod}>{disksToShow('B')}</div>
+          <div className={styles.rodName}>B</div>
+        </div>
+        <div>
+          <div className={styles.rod}>{disksToShow('C')}</div>
+          <div className={styles.rodName}>C</div>
+        </div>
       </div>
       <div>
         <button onClick={() => setGamePaused(!gamePaused)}>
@@ -108,7 +118,7 @@ function TowersOfHanoi() {
         <lable>Number of Disks : </lable>
         <input
           type="number"
-          onChange={(e) => setNDisks(e.target.value)}
+          onChange={(e) => setNDisks(+e.target.value)}
           value={nDisks}
         ></input>
         <button
