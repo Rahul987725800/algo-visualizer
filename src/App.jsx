@@ -41,9 +41,7 @@ function App() {
       <div onClick={() => setActiveVisualizer('recursion')}>
         Recursion Algorithms
       </div>
-      <div onClick={() => setActiveVisualizer('advGraphs')}>
-        Advanced Graphs
-      </div>
+      <div onClick={() => setActiveVisualizer('advGraph')}>Advanced Graphs</div>
       {visualizer()}
     </div>
   );

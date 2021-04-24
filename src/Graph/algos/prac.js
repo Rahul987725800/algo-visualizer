@@ -38,13 +38,13 @@ const breathFirstSearch = (rows, cols, source, destination) => {
     }
   }
 };
-// let rows = 10;
-// let cols = 10;
-// let source = point(0, 0);
-// let destination = point(6, 7);
-// for (let node of breathFirstSearch(rows, cols, source, destination)) {
-//   console.log(node);
-// }
+let rows = 10;
+let cols = 10;
+let source = point(0, 0);
+let destination = point(6, 7);
+for (let node of breathFirstSearch(rows, cols, source, destination)) {
+  console.log(node);
+}
 const deapthFirstSearch = (rows, cols, source, destination) => {
   const visited = [];
   for (let i = 0; i < rows; i++) {
@@ -86,10 +86,10 @@ const helper = (rows, cols, current, destination, visited) => {
   }
   return [];
 };
-let rows = 5;
-let cols = 5;
-let source = point(0, 0);
-let destination = point(4, 5);
-for (let node of deapthFirstSearch(rows, cols, source, destination)) {
-  console.log(node);
-}
+// let rows = 5;
+// let cols = 5;
+// let source = point(0, 0);
+// let destination = point(4, 5);
+// for (let node of deapthFirstSearch(rows, cols, source, destination)) {
+//   console.log(node);
+// }
