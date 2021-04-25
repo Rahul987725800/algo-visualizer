@@ -174,13 +174,14 @@ function dijkstra(source, destination, nodes) {
   while (nodesHeap.length !== 0) {
     let tempNode = pop(nodesHeap);
     visited[tempNode.num] = true;
-    if (tempNode.num === destination) return tempNode.distance;
+    if (tempNode.num === destination) return tempNode;
     for (let edge of tempNode.originatingEdges) {
       if (!visited[edge.endNode]) {
         let targetNode = nodes.find((node) => node.num === edge.endNode);
         if (tempNode.distance + edge.length < targetNode.distance) {
           remove(nodesHeap, targetNode);
           targetNode.distance = tempNode.distance + edge.length;
+          targetNode.predecessor = tempNode;
           add(nodesHeap, targetNode);
         }
       }
@@ -188,4 +189,9 @@ function dijkstra(source, destination, nodes) {
   }
   return Number.MAX_VALUE;
 }
-console.log(dijkstra(1, 8, nodes));
+const destinationNode = dijkstra(1, 8, nodes);
+let tempNode = destinationNode;
+while (tempNode) {
+  console.log(tempNode.num);
+  tempNode = tempNode.predecessor;
+}

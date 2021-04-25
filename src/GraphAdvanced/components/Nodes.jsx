@@ -31,9 +31,9 @@ export default function Nodes(
           style={{
             top: node.y + 'px',
             left: node.x + 'px',
-            background: visualizerState.nodesFinalized[i]
+            background: visualizerState.nodesFinalized[node.num]
               ? 'yellow'
-              : visualizerState.nodesVisited[i]
+              : visualizerState.nodesVisited[node.num]
               ? 'green'
               : nodes[i].num === startNode
               ? 'purple'

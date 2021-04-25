@@ -25,9 +25,9 @@ export default function Edges(
           background:
             edgeHovered === i
               ? 'red'
-              : visualizerState.edgesFinalized[i]
+              : visualizerState.edgesFinalized[edge.id]
               ? 'yellow'
-              : visualizerState.edgesVisited[i]
+              : visualizerState.edgesVisited[edge.id]
               ? 'green'
               : 'white',
         }}
