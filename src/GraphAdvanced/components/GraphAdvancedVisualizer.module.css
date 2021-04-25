@@ -19,13 +19,22 @@
   user-select: none;
   z-index: 2;
 }
+.nodeDistance {
+  position: fixed;
+  color: white;
+  transform: translate(-50%, -230%);
+}
 .edge {
-  height: 2px;
+  height: 3px;
   background-color: white;
   position: fixed;
 }
+
 .arrow {
   display: inline-block;
   font-size: 2rem;
   transform: translateY(-1.5rem);
+}
+.distance {
+  display: inline-block;
 }

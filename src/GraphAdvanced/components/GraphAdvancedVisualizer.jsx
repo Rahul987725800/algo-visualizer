@@ -1,42 +1,62 @@
 import React, { useState } from 'react';
-import { calculateLength, calculateSlopeInDegrees } from '../helper';
+import { depthFirstSearch } from '../algos/depthFirstSearch';
+import { breathFirstSearch } from '../algos/breathFirstSearch';
+import { calculateLength } from '../helper';
+import Edges from './Edges';
+import Nodes from './Nodes';
 import styles from './GraphAdvancedVisualizer.module.css';
-// const sampleNode = {
-//   num: 1,
-//   x: 24,
-//   y: 24,
-//   cursorOver: false,
-//   originatingEdges: [],
-//   terminatingEdges: [],
-// };
-// const sampleEdge = {
-//   sx: 0,
-//   sy: 0,
-//   ex: 100,
-//   ey: 100,
-//   startNode: 0,
-//   endNode: 3,
-//   directed: false
-// };
+const initialVisualizerState = () => {
+  return {
+    active: false,
+    delay: 500,
+    timeOuts: [],
+    edgesVisited: [],
+    nodesVisited: [],
+    edgesFinalized: [],
+    nodesFinalized: [],
+    dijkstraDistanceNodes: [],
+  };
+};
+
 function GraphAdvancedVisualizer() {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [visualizerState, setVisualizerState] = useState(() => {
+    return initialVisualizerState();
+  });
   const [directedEdges, setDirectedEdges] = useState(false);
   const [startMakingEdge, setStartMakingEdge] = useState(false);
   const [startNode, setStartNode] = useState(0);
   const [endNode, setEndNode] = useState(0);
+
+  const [showLength, setShowLength] = useState(false);
+  let reset = () => {
+    for (let timer of visualizerState.timeOuts) {
+      timer.clear();
+    }
+    setVisualizerState((vs) => ({
+      ...initialVisualizerState(),
+      delay: vs.delay,
+    }));
+  };
   const cursorOverWhichNode = () => {
     for (let i = 0; i < nodes.length; i++) {
-      if (nodes[i].cursorOver) return i;
+      if (nodes[i].cursorOver) return nodes[i].num;
     }
     return -1;
   };
   const addNode = (e) => {
     setNodes((nodes) => {
+      let num;
+      if (nodes.length === 0) {
+        num = 1;
+      } else {
+        num = nodes[nodes.length - 1].num + 1;
+      }
       return [
         ...nodes,
         {
-          num: nodes.length + 1,
+          num,
           x: e.pageX,
           y: e.pageY,
           originatingEdges: [],
@@ -44,6 +64,60 @@ function GraphAdvancedVisualizer() {
         },
       ];
     });
+  };
+  const addEdgeToNodes = (currentEdge) => {
+    if (directedEdges) {
+      setNodes((nodes) => {
+        const startNode = {
+          ...nodes.find((node) => node.num === currentEdge.startNode),
+        };
+        startNode.originatingEdges = [
+          ...startNode.originatingEdges,
+          currentEdge,
+        ];
+        const endNode = {
+          ...nodes.find((node) => node.num === currentEdge.endNode),
+        };
+        endNode.terminatingEdges = [...endNode.terminatingEdges, currentEdge];
+        return nodes.map((node) => {
+          if (node.num === startNode.num) return startNode;
+          if (node.num === endNode.num) return endNode;
+          return node;
+        });
+      });
+    } else {
+      setNodes((nodes) => {
+        const startNode = {
+          ...nodes.find((node) => node.num === currentEdge.startNode),
+        };
+        const endNode = {
+          ...nodes.find((node) => node.num === currentEdge.endNode),
+        };
+        startNode.originatingEdges = [
+          ...startNode.originatingEdges,
+          currentEdge,
+        ];
+        endNode.terminatingEdges = [...endNode.terminatingEdges, currentEdge];
+        const reversedCurrentEdge = { ...currentEdge };
+        reversedCurrentEdge.startNode = currentEdge.endNode;
+        reversedCurrentEdge.endNode = currentEdge.startNode;
+        startNode.terminatingEdges = [
+          ...startNode.terminatingEdges,
+          reversedCurrentEdge,
+        ];
+
+        endNode.originatingEdges = [
+          ...endNode.originatingEdges,
+          reversedCurrentEdge,
+        ];
+
+        return nodes.map((node) => {
+          if (node.num === startNode.num) return startNode;
+          if (node.num === endNode.num) return endNode;
+          return node;
+        });
+      });
+    }
   };
   return (
     <div className="container">
@@ -54,13 +128,12 @@ function GraphAdvancedVisualizer() {
           if (startMakingEdge) {
             // console.log(edges);
             setEdges((edges) => {
-              const uedges = [...edges];
-              const uce = { ...uedges.pop() };
+              const uce = { ...edges[edges.length - 1] };
               uce.ex = e.pageX;
               uce.ey = e.pageY;
+              uce.length = calculateLength(uce);
               uce.endNode = cursorOverWhichNode();
-              uedges.push(uce);
-              return uedges;
+              return [...edges.slice(0, edges.length - 1), uce];
             });
           }
         }}
@@ -68,13 +141,21 @@ function GraphAdvancedVisualizer() {
           if (cursorOverWhichNode() === -1) return;
           setStartMakingEdge(true);
           setEdges((edges) => {
+            let id;
+            if (edges.length === 0) {
+              id = 1;
+            } else {
+              id = edges[edges.length - 1].id + 1;
+            }
             return [
               ...edges,
               {
+                id,
                 sx: e.pageX,
                 sy: e.pageY,
                 ex: e.pageX,
                 ey: e.pageY,
+                length: 0,
                 startNode: cursorOverWhichNode(),
                 endNode: cursorOverWhichNode(),
                 directed: directedEdges,
@@ -84,154 +165,147 @@ function GraphAdvancedVisualizer() {
         }}
         onMouseUp={(e) => {
           if (startMakingEdge) {
+            setStartMakingEdge(false);
             const currentEdge = edges[edges.length - 1];
             // console.log(currentEdge);
             if (
-              currentEdge.endNode === currentEdge.startNode ||
-              currentEdge.endNode === -1
+              currentEdge.endNode === -1 ||
+              currentEdge.endNode === currentEdge.startNode
             ) {
-              setEdges((edges) => edges.slice(0, edges.length - 1));
+              setEdges((edges) => {
+                const uEdges = [...edges];
+                uEdges.pop();
+                return uEdges;
+              });
             } else {
               // add edge to nodes
-              if (directedEdges) {
-                setNodes((nodes) => {
-                  const startNode = { ...nodes[currentEdge.startNode] };
-                  startNode.originatingEdges = [
-                    ...startNode.originatingEdges,
-                    currentEdge,
-                  ];
-                  const endNode = { ...nodes[currentEdge.endNode] };
-                  endNode.terminatingEdges = [
-                    ...endNode.terminatingEdges,
-                    currentEdge,
-                  ];
-                  const unodes = [...nodes];
-                  unodes[currentEdge.startNode] = startNode;
-                  unodes[currentEdge.endNode] = endNode;
-                  return unodes;
-                });
-              } else {
-                setNodes((nodes) => {
-                  const startNode = { ...nodes[currentEdge.startNode] };
-                  startNode.originatingEdges = [
-                    ...startNode.originatingEdges,
-                    currentEdge,
-                  ];
-                  startNode.terminatingEdges = [
-                    ...startNode.terminatingEdges,
-                    currentEdge,
-                  ];
-                  const endNode = { ...nodes[currentEdge.endNode] };
-                  endNode.originatingEdges = [
-                    ...endNode.originatingEdges,
-                    currentEdge,
-                  ];
-                  endNode.terminatingEdges = [
-                    ...endNode.terminatingEdges,
-                    currentEdge,
-                  ];
-                  const unodes = [...nodes];
-                  unodes[currentEdge.startNode] = startNode;
-                  unodes[currentEdge.endNode] = endNode;
-                  return unodes;
-                });
-              }
+              addEdgeToNodes(currentEdge);
             }
-            setStartMakingEdge(false);
           } else {
-            if (cursorOverWhichNode() === -1) {
+            if (!e.edgeClicked && cursorOverWhichNode() === -1) {
               addNode(e);
             }
           }
         }}
       >
-        {nodes.map((node, i) => {
-          return (
-            <div
-              className={styles.node}
-              style={{
-                top: node.y + 'px',
-                left: node.x + 'px',
-                background:
-                  nodes[i].num === startNode
-                    ? 'purple'
-                    : nodes[i].num === endNode
-                    ? 'red'
-                    : 'white',
-              }}
-              key={node.num}
-              onMouseEnter={() => {
-                setNodes((nodes) => {
-                  const unode = { ...nodes[i] };
-                  unode.cursorOver = true;
-                  const unodes = [...nodes];
-                  unodes[i] = unode;
-                  return unodes;
-                });
-              }}
-              onMouseLeave={() => {
-                setNodes((nodes) => {
-                  const unode = { ...nodes[i] };
-                  unode.cursorOver = false;
-                  const unodes = [...nodes];
-                  unodes[i] = unode;
-                  return unodes;
-                });
-              }}
-              onClick={() => {
-                if (!startNode) {
-                  setStartNode(nodes[i].num);
-                } else {
-                  if (nodes[i].num !== startNode) setEndNode(nodes[i].num);
-                }
-              }}
-            >
-              {node.num}
-            </div>
-          );
-        })}
-        {edges.map((edge, i) => {
-          return (
-            <div
-              className={styles.edge}
-              style={{
-                top: edge.sy + 'px',
-                left: edge.sx + 'px',
-                transformOrigin: '0 0',
-                transform: `rotate(${calculateSlopeInDegrees(edge)}deg)`,
-                width: `${calculateLength(edge)}px`,
-                color: 'white',
-              }}
-              key={i}
-            >
-              {edge.directed && <span className={styles.arrow}>{'>'}</span>}
-            </div>
-          );
-        })}
+        {Nodes(
+          nodes,
+          showLength,
+          visualizerState,
+          startNode,
+          endNode,
+          setNodes,
+          setStartNode,
+          setEndNode,
+        )}
+        {Edges(
+          edges,
+          visualizerState,
+          startMakingEdge,
+          setEdges,
+          setNodes,
+          showLength,
+        )}
       </div>
-      <button
-        onClick={() => console.log(nodes)}
-        style={{ position: 'fixed', top: 0, left: 0 }}
-      >
-        click
-      </button>
-      <button
-        onClick={() => setDirectedEdges(!directedEdges)}
-        style={{ position: 'fixed', top: 0, left: '100px' }}
-      >
-        set directed
-      </button>
-      <button
-        onClick={() => {
-          setStartNode(0);
-          setEndNode(0);
-        }}
-        style={{ position: 'fixed', top: 0, left: '200px' }}
-      >
-        reset nodes
-      </button>
+      {Controls()}
     </div>
   );
+
+  function Controls() {
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0 }}>
+        <button
+          onClick={() => {
+            console.log(nodes);
+            console.log(edges);
+          }}
+        >
+          click
+        </button>
+        <button onClick={() => setDirectedEdges(!directedEdges)}>
+          set directed
+        </button>
+        <button
+          onClick={() => {
+            setStartNode(0);
+            setEndNode(0);
+          }}
+        >
+          reset nodes
+        </button>
+        <button onClick={reset}>Reset</button>
+        <label style={{ color: 'white' }}>Show Length:</label>
+        <input
+          type="checkbox"
+          onClick={(e) => setShowLength(!showLength)}
+        ></input>
+        <button
+          onClick={() => {
+            if (startNode && endNode)
+              breathFirstSearch(
+                startNode,
+                endNode,
+                nodes,
+                edges,
+                visualizerState,
+                setVisualizerState,
+              );
+          }}
+        >
+          BFS
+        </button>
+        <button
+          onClick={() => {
+            if (startNode && endNode)
+              depthFirstSearch(
+                startNode,
+                endNode,
+                nodes,
+                edges,
+                visualizerState,
+                setVisualizerState,
+              );
+          }}
+        >
+          DFS
+        </button>
+        <button
+          onClick={() => {
+            if (startNode && endNode)
+              depthFirstSearch(
+                startNode,
+                endNode,
+                nodes,
+                edges,
+                visualizerState,
+                setVisualizerState,
+              );
+          }}
+        >
+          Dijkastra
+        </button>
+      </div>
+    );
+  }
 }
 
 export default GraphAdvancedVisualizer;
+
+// const sampleNode = {
+//   num: 1,
+//   x: 24,
+//   y: 24,
+//   cursorOver: false,
+//   originatingEdges: [],
+//   terminatingEdges: [],
+// };
+// const sampleEdge = {
+//   id: unique,
+//   sx: 0,
+//   sy: 0,
+//   ex: 100,
+//   ey: 100,
+//   startNode: 0,
+//   endNode: 3,
+//   directed: false
+// };
