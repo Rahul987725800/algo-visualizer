@@ -19,10 +19,13 @@ export default function Nodes(
         >
           {showLength && (
             <span>
-              {visualizerState.dijkstraDistanceNodes[i] === Number.MAX_VALUE
-                ? // <i className="fa fa-infinity"></i>
-                  '&infin;'
-                : visualizerState.dijkstraDistanceNodes[i]}
+              {visualizerState.dijkstraDistanceNodes[node.num] ===
+              Number.MAX_VALUE ? (
+                // <i className="fa fa-infinity"></i>
+                <span>&infin;</span>
+              ) : (
+                visualizerState.dijkstraDistanceNodes[node.num]?.toFixed(0)
+              )}
             </span>
           )}
         </div>

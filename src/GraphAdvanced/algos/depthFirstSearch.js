@@ -42,11 +42,13 @@ export const depthFirstSearch = (
       });
     }, visualizerState.delay * timeOuts.length),
   );
+  const visitedEdges = new Set();
   const path = helper(
     sourceNode,
     destinationNode,
     nodes,
     edges,
+    visitedEdges,
     visited,
 
     visualizerState,
@@ -62,6 +64,7 @@ function helper(
   destinationNode,
   nodes,
   edges,
+  visitedEdges,
   visited,
   visualizerState,
   setVisualizerState,
@@ -72,6 +75,8 @@ function helper(
   if (sourceNode.num === destinationNode.num)
     return [{ node: sourceNode, edge: null }];
   for (let edge of sourceNode.originatingEdges) {
+    if (visitedEdges.has(edge.id)) continue;
+    visitedEdges.add(edge.id);
     timeOuts.push(
       new Timer(() => {
         setVisualizerState((vs) => {
@@ -90,6 +95,7 @@ function helper(
         destinationNode,
         nodes,
         edges,
+        visitedEdges,
         visited,
         visualizerState,
         setVisualizerState,

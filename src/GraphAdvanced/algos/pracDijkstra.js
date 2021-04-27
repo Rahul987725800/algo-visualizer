@@ -170,11 +170,14 @@ function dijkstra(source, destination, nodes) {
   for (let node of nodes) {
     visited[node.num] = false;
   }
-
   while (nodesHeap.length !== 0) {
     let tempNode = pop(nodesHeap);
     visited[tempNode.num] = true;
     if (tempNode.num === destination) return tempNode;
+    tempNode.originatingEdges = tempNode.originatingEdges.sort(
+      (e1, e2) => e1.length - e2.length,
+    );
+
     for (let edge of tempNode.originatingEdges) {
       if (!visited[edge.endNode]) {
         let targetNode = nodes.find((node) => node.num === edge.endNode);
@@ -191,6 +194,7 @@ function dijkstra(source, destination, nodes) {
 }
 const destinationNode = dijkstra(1, 8, nodes);
 let tempNode = destinationNode;
+console.log(tempNode.distance);
 while (tempNode) {
   console.log(tempNode.num);
   tempNode = tempNode.predecessor;

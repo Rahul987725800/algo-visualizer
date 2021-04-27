@@ -5,6 +5,7 @@ import { calculateLength } from '../helper';
 import Edges from './Edges';
 import Nodes from './Nodes';
 import styles from './GraphAdvancedVisualizer.module.css';
+import { dijkstra } from '../algos/dijkstra';
 const initialVisualizerState = () => {
   return {
     active: false,
@@ -29,7 +30,7 @@ function GraphAdvancedVisualizer() {
   const [startNode, setStartNode] = useState(0);
   const [endNode, setEndNode] = useState(0);
 
-  const [showLength, setShowLength] = useState(false);
+  const [showLength, setShowLength] = useState(true);
   let reset = () => {
     for (let timer of visualizerState.timeOuts) {
       timer.clear();
@@ -272,10 +273,10 @@ function GraphAdvancedVisualizer() {
         <button
           onClick={() => {
             if (startNode && endNode)
-              depthFirstSearch(
+              dijkstra(
                 startNode,
                 endNode,
-                nodes,
+                JSON.parse(JSON.stringify(nodes)),
                 edges,
                 visualizerState,
                 setVisualizerState,

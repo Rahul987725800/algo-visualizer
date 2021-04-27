@@ -8,6 +8,7 @@ export const breathFirstSearch = (
   visualizerState,
   setVisualizerState,
 ) => {
+  // console.log(nodes);
   const sourceNode = nodes.find((node) => node.num === source);
   const destinationNode = nodes.find((node) => node.num === destination);
   // console.log(sourceNode, destinationNode, nodes, edges, visualizerState);
@@ -51,7 +52,7 @@ export const breathFirstSearch = (
       });
     }, visualizerState.delay * timeOuts.length),
   );
-
+  const visitedEdges = new Set();
   while (queue.length !== 0) {
     const path = queue.shift();
     const tempNode = path[path.length - 1].node;
@@ -60,6 +61,8 @@ export const breathFirstSearch = (
       break;
     }
     for (let edge of tempNode.originatingEdges) {
+      if (visitedEdges.has(edge.id)) continue;
+      visitedEdges.add(edge.id);
       timeOuts.push(
         new Timer(() => {
           setVisualizerState((vs) => {

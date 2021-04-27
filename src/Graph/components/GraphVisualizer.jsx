@@ -10,8 +10,8 @@ const TOTAL_HEIGHT = Math.floor((window.innerHeight * 62) / 100);
 const WIDTH_PER_BLOCK = 24;
 const COLUMNS = Math.floor(TOTAL_WIDTH / WIDTH_PER_BLOCK);
 const ROWS = Math.floor(TOTAL_HEIGHT / WIDTH_PER_BLOCK);
-console.log(ROWS);
-console.log(COLUMNS);
+// console.log(ROWS);
+// console.log(COLUMNS);
 function genArray() {
   let arr = [];
   for (let i = 0; i < ROWS; i++) {
