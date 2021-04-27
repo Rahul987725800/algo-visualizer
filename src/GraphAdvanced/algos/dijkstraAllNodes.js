@@ -1,6 +1,7 @@
+// just source needed
 import { Timer } from '../../utils';
 import { pop, add, remove, showTrack } from './dijkstraCommon';
-export function dijkstra(
+export function dijkstraAllNodes(
   source,
   destination,
   nodes,
@@ -66,11 +67,11 @@ export function dijkstra(
         });
       }, visualizerState.delay * timeOuts.length),
     );
-    if (tempNode.num === destination) {
-      showTrack(tempNode, visualizerState, setVisualizerState, timeOuts);
-      setVisualizerState((vs) => ({ ...vs, timeOuts }));
-      return tempNode.distance;
-    }
+    // if (tempNode.num === destination) {
+    //   showTrack(tempNode, visualizerState, setVisualizerState, timeOuts);
+    //   setVisualizerState((vs) => ({ ...vs, timeOuts }));
+    //   return tempNode.distance;
+    // }
     const sortedEdges = tempNode.originatingEdges
       .map((edge) => ({ ...edge }))
       .sort((e1, e2) => e1.length - e2.length);
@@ -117,6 +118,9 @@ export function dijkstra(
         }
       }
     }
+  }
+  for (let node of nodes) {
+    showTrack(node, visualizerState, setVisualizerState, timeOuts);
   }
   setVisualizerState((vs) => ({ ...vs, timeOuts }));
   return Number.MAX_VALUE;

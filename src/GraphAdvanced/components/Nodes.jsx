@@ -9,6 +9,7 @@ export default function Nodes(
   setNodes,
   setStartNode,
   setEndNode,
+  setEdges,
 ) {
   return nodes.map((node, i) => {
     return (
@@ -17,14 +18,14 @@ export default function Nodes(
           className={styles.nodeDistance}
           style={{ top: node.y + 'px', left: node.x + 'px' }}
         >
-          {showLength && (
+          {showLength && visualizerState.dijkstraDistanceNodes[node.num] && (
             <span>
               {visualizerState.dijkstraDistanceNodes[node.num] ===
               Number.MAX_VALUE ? (
                 // <i className="fa fa-infinity"></i>
                 <span>&infin;</span>
               ) : (
-                visualizerState.dijkstraDistanceNodes[node.num]?.toFixed(0)
+                Math.round(visualizerState.dijkstraDistanceNodes[node.num])
               )}
             </span>
           )}
@@ -34,15 +35,16 @@ export default function Nodes(
           style={{
             top: node.y + 'px',
             left: node.x + 'px',
-            background: visualizerState.nodesFinalized[node.num]
-              ? 'yellow'
-              : visualizerState.nodesVisited[node.num]
-              ? 'green'
-              : nodes[i].num === startNode
-              ? 'purple'
-              : nodes[i].num === endNode
-              ? 'red'
-              : 'white',
+            background:
+              nodes[i].num === startNode
+                ? 'purple'
+                : nodes[i].num === endNode
+                ? 'red'
+                : visualizerState.nodesFinalized[node.num]
+                ? 'yellow'
+                : visualizerState.nodesVisited[node.num]
+                ? 'green'
+                : 'white',
           }}
           onMouseEnter={() => {
             setNodes((nodes) => {
@@ -68,6 +70,36 @@ export default function Nodes(
             } else {
               if (nodes[i].num !== startNode) setEndNode(nodes[i].num);
             }
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            const originatingEdges = node.originatingEdges.map((e) => e.id);
+            const terminatingEdges = node.terminatingEdges.map((e) => e.id);
+            // remove from edges
+            setEdges((edges) =>
+              edges.filter(
+                (e) =>
+                  !originatingEdges.includes(e.id) &&
+                  !terminatingEdges.includes(e.id),
+              ),
+            );
+            // remove from other nodes
+            setNodes((nodes) => {
+              return nodes.map((n) => {
+                const uoe = n.originatingEdges.filter(
+                  (e) => !terminatingEdges.includes(e.id),
+                );
+                const ute = n.terminatingEdges.filter(
+                  (e) => !originatingEdges.includes(e.id),
+                );
+                return {
+                  ...n,
+                  originatingEdges: uoe,
+                  terminatingEdges: ute,
+                };
+              });
+            });
+            setNodes((nodes) => nodes.filter((n) => n.num !== node.num));
           }}
         >
           {node.num}

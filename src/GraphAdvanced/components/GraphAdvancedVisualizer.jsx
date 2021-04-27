@@ -6,6 +6,10 @@ import Edges from './Edges';
 import Nodes from './Nodes';
 import styles from './GraphAdvancedVisualizer.module.css';
 import { dijkstra } from '../algos/dijkstra';
+import { prims } from '../algos/prims';
+import { dijkstraAllNodes } from '../algos/dijkstraAllNodes';
+import { kruskals } from '../algos/kruskals';
+import { topSortAlgo } from '../algos/topSort';
 const initialVisualizerState = () => {
   return {
     active: false,
@@ -198,6 +202,7 @@ function GraphAdvancedVisualizer() {
           setNodes,
           setStartNode,
           setEndNode,
+          setEdges,
         )}
         {Edges(
           edges,
@@ -284,6 +289,49 @@ function GraphAdvancedVisualizer() {
           }}
         >
           Dijkastra
+        </button>
+        <button
+          onClick={() => {
+            if (startNode)
+              dijkstraAllNodes(
+                startNode,
+                endNode,
+                JSON.parse(JSON.stringify(nodes)),
+                edges,
+                visualizerState,
+                setVisualizerState,
+              );
+          }}
+        >
+          Dijkastra All Nodes
+        </button>
+        <button
+          onClick={() => {
+            prims(nodes, edges, visualizerState, setVisualizerState);
+          }}
+        >
+          Prims
+        </button>
+        <button
+          onClick={() => {
+            kruskals(nodes, edges, visualizerState, setVisualizerState);
+          }}
+        >
+          Kruskals
+        </button>
+        <button
+          onClick={() => {
+            if (startNode)
+              topSortAlgo(
+                startNode,
+                JSON.parse(JSON.stringify(nodes)),
+                edges,
+                visualizerState,
+                setVisualizerState,
+              );
+          }}
+        >
+          TopSort
         </button>
       </div>
     );

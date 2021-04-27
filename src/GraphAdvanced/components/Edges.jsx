@@ -43,6 +43,7 @@ export default function Edges(
         onMouseUp={(e) => {
           if (startMakingEdge) return;
           e.edgeClicked = true;
+          setEdgeHovered(-1);
           setEdges((edges) => {
             const removedEdge = { ...edges[i] };
             const updatedEdges = edges.filter(
@@ -74,16 +75,16 @@ export default function Edges(
           className={styles.distance}
           style={{
             transform:
-              (slope < -90
-                ? 'scale(-1, -1)'
+              slope < -90
+                ? 'scale(-1, -1)' + (edge.directed ? 'translateY(2.7rem)' : '')
                 : slope > 90
-                ? 'scale(-1, -1)'
-                : 'scale(1)') + (edge.directed ? 'translateY(-1rem)' : ''),
+                ? 'scale(-1, -1)' + (edge.directed ? 'translateY(1rem)' : '')
+                : 'scale(1)' + (edge.directed ? 'translateY(-1rem)' : ''),
           }}
         >
-          {showLength && edge.length.toFixed(0)}
+          {showLength && Math.round(edge.length)}
           {/* <br />
-                {slope} */}
+          {slope} */}
         </span>
       </div>
     );
