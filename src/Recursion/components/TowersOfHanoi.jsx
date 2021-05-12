@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './TowersOfHanoi.module.css';
 import { towersOfHanoi } from '../algos/towersOfHanoi';
+import { Debounce } from '../../utils';
+import TopBar from '../../TopBar/TopBar';
+import Button from '../../shared/Button';
 function getDisks(n) {
   let ans = [];
   for (let i = 0; i < n; i++) {
@@ -16,7 +19,7 @@ function getDisks(n) {
 const initialVisualizerState = () => {
   return {
     active: false,
-    delay: 15000,
+    delay: 100,
     timeOuts: [],
   };
 };
@@ -43,6 +46,14 @@ function TowersOfHanoi() {
       ) : null,
     );
   };
+  useEffect(() => {
+    const decideLayout = new Debounce(() => {
+      setDisks(getDisks(nDisks));
+    }, 300);
+    decideLayout.call();
+
+    window.onresize = () => decideLayout.call();
+  }, []);
   let reset = () => {
     for (let timer of visualizerState.timeOuts) {
       timer.clear();
@@ -75,8 +86,7 @@ function TowersOfHanoi() {
     reset();
   }, [nDisks]);
   return (
-    <div>
-      <h3>Towers of Hanoi</h3>
+    <div className="container">
       <div className={styles.block}>
         <div>
           <div className={styles.rod}>{disksToShow('A')}</div>
@@ -91,37 +101,42 @@ function TowersOfHanoi() {
           <div className={styles.rodName}>C</div>
         </div>
       </div>
-      <div>
-        <button onClick={() => setGamePaused(!gamePaused)}>
+      <TopBar header="Towers of Hanoi">
+        <Button onClick={() => reset()}>Reset</Button>
+        <Button onClick={() => setGamePaused(!gamePaused)}>
           {gamePaused ? 'Resume' : 'Pause'}
-        </button>
-        <button onClick={() => reset()}>Reset</button>
-        <label>Speed: </label>
-        <input
-          type="range"
-          max={95}
-          value={100 - visualizerState.delay / 10}
-          onChange={(e) => {
-            console.log('range');
-            console.log(visualizerState.active);
-            if (visualizerState.active) {
-              reset();
-            }
-            setVisualizerState((vs) => {
-              return {
-                ...vs,
-                delay: (100 - e.target.value) * 10,
-              };
-            });
-          }}
-        ></input>
-        <lable>Number of Disks : </lable>
-        <input
-          type="number"
-          onChange={(e) => setNDisks(+e.target.value)}
-          value={nDisks}
-        ></input>
-        <button
+        </Button>
+
+        <Button>
+          <label>Speed: </label>
+          <input
+            type="range"
+            max={95}
+            value={100 - visualizerState.delay / 10}
+            onChange={(e) => {
+              console.log('range');
+              console.log(visualizerState.active);
+              if (visualizerState.active) {
+                reset();
+              }
+              setVisualizerState((vs) => {
+                return {
+                  ...vs,
+                  delay: (100 - e.target.value) * 10,
+                };
+              });
+            }}
+          ></input>
+        </Button>
+        <Button>
+          <lable>Number of Disks : </lable>
+          <input
+            type="number"
+            onChange={(e) => setNDisks(+e.target.value)}
+            value={nDisks}
+          ></input>
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               towersOfHanoi(
@@ -134,8 +149,8 @@ function TowersOfHanoi() {
           }}
         >
           Start
-        </button>
-      </div>
+        </Button>
+      </TopBar>
     </div>
   );
 }

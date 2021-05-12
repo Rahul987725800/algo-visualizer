@@ -1,0 +1,19 @@
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  padding: 0.5rem 1rem;
+  background-color: #34465e;
+  text-align: start;
+}
+.container header {
+  color: white;
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+}

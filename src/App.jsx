@@ -1,48 +1,27 @@
 import React, { useState } from 'react';
+import { Switch, Route } from 'react-router';
 import BackTrackingVisualizer from './BackTracking/components/BackTrackingVisualizer';
 import GraphVisualizer from './Graph/components/GraphVisualizer';
 import GraphAdvancedVisualizer from './GraphAdvanced/components/GraphAdvancedVisualizer';
+import Navigation from './Navigation/Navigation';
 import RecursionVisualizer from './Recursion/components/RecursionVisualizer';
 import SearchingVisualizer from './Searching/components/SearchingVisualizer';
 import SortingVisualizer from './Sorting/components/SortingVisualizer';
-
 function App() {
-  const [activeVisualizer, setActiveVisualizer] = useState('advGraphs');
-  const visualizer = () => {
-    switch (activeVisualizer) {
-      case 'sorting':
-        return <SortingVisualizer />;
-      case 'searching':
-        return <SearchingVisualizer />;
-      case 'graph':
-        return <GraphVisualizer />;
-      case 'backtrack':
-        return <BackTrackingVisualizer />;
-      case 'recursion':
-        return <RecursionVisualizer />;
-      case 'advGraph':
-        return <GraphAdvancedVisualizer />;
-      default:
-        return <div></div>;
-    }
-  };
   return (
     <div>
-      <div onClick={() => setActiveVisualizer('sorting')}>
-        Sorting Algorithms
-      </div>
-      <div onClick={() => setActiveVisualizer('searching')}>
-        Searching Algorithms
-      </div>
-      <div onClick={() => setActiveVisualizer('graph')}>Graph Algorithms</div>
-      <div onClick={() => setActiveVisualizer('backtrack')}>
-        BackTracking Algorithms
-      </div>
-      <div onClick={() => setActiveVisualizer('recursion')}>
-        Recursion Algorithms
-      </div>
-      <div onClick={() => setActiveVisualizer('advGraph')}>Advanced Graphs</div>
-      {visualizer()}
+      <Switch>
+        <Route path="/" exact component={Navigation}></Route>
+        <Route path="/sorting" component={SortingVisualizer}></Route>
+        <Route path="/searching" component={SearchingVisualizer}></Route>
+        <Route path="/graph" component={GraphVisualizer}></Route>
+        <Route path="/backtracking" component={BackTrackingVisualizer}></Route>
+        <Route path="/recursion" component={RecursionVisualizer}></Route>
+        <Route
+          path="/advanced-graph"
+          component={GraphAdvancedVisualizer}
+        ></Route>
+      </Switch>
     </div>
   );
 }

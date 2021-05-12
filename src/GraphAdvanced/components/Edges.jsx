@@ -76,10 +76,10 @@ export default function Edges(
           style={{
             transform:
               slope < -90
-                ? 'scale(-1, -1)' + (edge.directed ? 'translateY(2.7rem)' : '')
+                ? 'scale(-1, -1) ' + (edge.directed ? 'translateY(2.7rem)' : '')
                 : slope > 90
-                ? 'scale(-1, -1)' + (edge.directed ? 'translateY(1rem)' : '')
-                : 'scale(1)' + (edge.directed ? 'translateY(-1rem)' : ''),
+                ? 'scale(-1, -1) ' + (edge.directed ? 'translateY(2rem)' : '')
+                : 'scale(1) ' + (edge.directed ? 'translateY(-2rem)' : ''),
           }}
         >
           {showLength && Math.round(edge.length)}

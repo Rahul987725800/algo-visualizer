@@ -33,7 +33,7 @@
 .arrow {
   display: inline-block;
   font-size: 2rem;
-  transform: translateY(-1.5rem);
+  transform: translateY(-1rem);
 }
 .distance {
   display: inline-block;

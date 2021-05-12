@@ -1,8 +1,3 @@
-.container {
-  text-align: center;
-  width: 80%;
-  margin: auto;
-}
 .array {
   display: flex;
   justify-content: space-evenly;

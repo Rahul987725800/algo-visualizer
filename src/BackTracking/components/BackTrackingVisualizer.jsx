@@ -1,15 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NQueens from './NQueens';
-import styles from './BackTrackingVisualizer.module.css';
+import { Link, Switch, Route } from 'react-router-dom';
 import SudokuSolver from './SudokuSolver';
+
 function BackTrackingVisualizer() {
-  return (
-    <div class="container">
-      <h2>BackTracking Visualizer</h2>
-      <SudokuSolver />
-      <NQueens />
-    </div>
-  );
+  const [active, setActive] = useState('sudoku');
+  if (active === 'sudoku') return <SudokuSolver setActive={setActive} />;
+  else if (active === 'nqueen') return <NQueens setActive={setActive} />;
 }
 
 export default BackTrackingVisualizer;

@@ -1,0 +1,49 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add react-router-dom
+
+PATH: 
+  C:\Git\mingw64\bin;C:\Git\usr\bin;C:\Users\Rahul Gupta\bin;C:\Users\Rahul Gupta\go\bin;C:\Program Files\Java\jdk-14\bin;C:\TDM-GCC-64\bin;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\iCLS;C:\Program Files\Intel\Intel(R) Management Engine Components\iCLS;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\WiFi\bin;C:\Program Files\Common Files\Intel\WirelessCommon;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\Brackets\command;C:\Program Files\dotnet;C:\Users\Rahul Gupta\AppData\Local\Programs\Python\Python38;C:\Users\Rahul Gupta\AppData\Local\Programs\Python\Python38\Scripts;C:\Ruby26-x64\bin;C:\Program Files (x86)\Yarn\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Go\bin;C:\Program Files\nodejs;C:\sqlite;C:\Git\cmd;C:\Git\mingw64\bin;C:\Git\usr\bin;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\Rahul Gupta\AppData\Local\Programs\Python\Python39\Scripts;C:\Users\Rahul Gupta\AppData\Local\Programs\Python\Python39;C:\Users\Rahul Gupta\.cargo\bin;C:\Ruby26-x64\bin;C:\Program Files\MongoDB\Server\4.2\bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\Users\Rahul Gupta\AppData\Local\Microsoft\WindowsApps;C:\Users\Rahul Gupta\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\heroku\bin;C:\Users\Rahul Gupta\.dotnet\tools;C:\TDM-GCC-64\bin;C:\Users\Rahul Gupta\AppData\Local\GitHubDesktop\bin;C:\Program Files\Java\jdk-14\bin;C:\Users\Rahul Gupta\go\bin;C:\Users\Rahul Gupta\Desktop;C:\Users\Rahul Gupta\AppData\Local\Yarn\bin;C:\src\flutter\bin;C:\users\rahul gupta\.gem\ruby\2.6.0\bin;C:\Users\Rahul Gupta\AppData\Local\Microsoft\WindowsApps;C:\Users\Rahul Gupta\go\bin;C:\Users\Rahul Gupta\AppData\Roaming\npm;C:\Program Files\PostgreSQL\12\bin;C:\Program Files\redis;C:\FFmpeg\bin;C:\Program Files\MiKTeX\miktex\bin\x64;C:\Users\Rahul Gupta\AppData\Local\Programs\MiKTeX\miktex\bin\x64
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  14.15.4
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\Rahul Gupta\Desktop\awesome projects\sorting-visualizer\node_modules\esbuild\esbuild.exe'
+
+npm manifest: 
+  {
+    "scripts": {
+      "start": "snowpack dev",
+      "build": "snowpack build",
+      "test": "web-test-runner \"src/**/*.test.jsx\"",
+      "format": "prettier --write \"src/**/*.{js,jsx}\"",
+      "lint": "prettier --check \"src/**/*.{js,jsx}\""
+    },
+    "dependencies": {
+      "react": "^17.0.0",
+      "react-dom": "^17.0.0",
+      "react-draggable": "^4.4.3"
+    },
+    "devDependencies": {
+      "@snowpack/plugin-dotenv": "^2.0.5",
+      "@snowpack/plugin-react-refresh": "^2.4.0",
+      "@snowpack/web-test-runner-plugin": "^0.2.0",
+      "@testing-library/react": "^11.0.0",
+      "@web/test-runner": "^0.12.0",
+      "chai": "^4.2.0",
+      "prettier": "^2.0.5",
+      "snowpack": "^3.0.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

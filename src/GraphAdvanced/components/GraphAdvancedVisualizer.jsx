@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { depthFirstSearch } from '../algos/depthFirstSearch';
 import { breathFirstSearch } from '../algos/breathFirstSearch';
 import { calculateLength } from '../helper';
@@ -10,10 +10,12 @@ import { prims } from '../algos/prims';
 import { dijkstraAllNodes } from '../algos/dijkstraAllNodes';
 import { kruskals } from '../algos/kruskals';
 import { topSortAlgo } from '../algos/topSort';
+import TopBar from '../../TopBar/TopBar';
+import Button from '../../shared/Button';
 const initialVisualizerState = () => {
   return {
     active: false,
-    delay: 500,
+    delay: 100,
     timeOuts: [],
     edgesVisited: [],
     nodesVisited: [],
@@ -24,6 +26,7 @@ const initialVisualizerState = () => {
 };
 
 function GraphAdvancedVisualizer() {
+  const [gamePaused, setGamePaused] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [visualizerState, setVisualizerState] = useState(() => {
@@ -124,6 +127,23 @@ function GraphAdvancedVisualizer() {
       });
     }
   };
+  useEffect(() => {
+    if (gamePaused) {
+      for (let timer of visualizerState.timeOuts) {
+        timer.pause();
+      }
+    } else {
+      for (let timer of visualizerState.timeOuts) {
+        timer.resume();
+      }
+    }
+  }, [gamePaused]);
+  function deleteAll() {
+    setNodes([]);
+    setEdges([]);
+    setStartNode(0);
+    setEndNode(0);
+  }
   return (
     <div className="container">
       <div
@@ -219,33 +239,78 @@ function GraphAdvancedVisualizer() {
 
   function Controls() {
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0 }}>
-        <button
+      <TopBar header="Advanced Graphs">
+        {/* <Button
           onClick={() => {
             console.log(nodes);
             console.log(edges);
           }}
         >
           click
-        </button>
-        <button onClick={() => setDirectedEdges(!directedEdges)}>
-          set directed
-        </button>
-        <button
+        </Button> */}
+        <Button
+          onClick={() => {
+            deleteAll();
+            reset();
+          }}
+        >
+          Clear
+        </Button>
+        <Button onClick={reset}>Reset</Button>
+        <Button onClick={() => setGamePaused(!gamePaused)}>
+          {gamePaused ? 'Resume' : 'Pause'}
+        </Button>
+
+        <Button>
+          <label
+            style={{
+              color: 'white',
+            }}
+          >
+            Speed:{' '}
+          </label>
+          <input
+            type="range"
+            max={95}
+            value={100 - visualizerState.delay / 10}
+            onChange={(e) => {
+              if (visualizerState.active) {
+                reset();
+              }
+              setVisualizerState((vs) => {
+                return {
+                  ...vs,
+                  delay: (100 - e.target.value) * 10,
+                };
+              });
+            }}
+          ></input>
+        </Button>
+
+        <Button
           onClick={() => {
             setStartNode(0);
             setEndNode(0);
           }}
         >
-          reset nodes
-        </button>
-        <button onClick={reset}>Reset</button>
-        <label style={{ color: 'white' }}>Show Length:</label>
-        <input
-          type="checkbox"
-          onClick={(e) => setShowLength(!showLength)}
-        ></input>
-        <button
+          Reset Src/Dest
+        </Button>
+
+        <Button>
+          <label>Show Length: </label>
+          <input
+            checked={showLength}
+            type="checkbox"
+            onClick={(e) => setShowLength(!showLength)}
+          ></input>
+        </Button>
+        <Button
+          onClick={() => setDirectedEdges(!directedEdges)}
+          active={directedEdges}
+        >
+          Directed Nodes
+        </Button>
+        <Button
           onClick={() => {
             if (startNode && endNode)
               breathFirstSearch(
@@ -259,8 +324,8 @@ function GraphAdvancedVisualizer() {
           }}
         >
           BFS
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (startNode && endNode)
               depthFirstSearch(
@@ -274,8 +339,8 @@ function GraphAdvancedVisualizer() {
           }}
         >
           DFS
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (startNode && endNode)
               dijkstra(
@@ -289,8 +354,8 @@ function GraphAdvancedVisualizer() {
           }}
         >
           Dijkastra
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (startNode)
               dijkstraAllNodes(
@@ -304,22 +369,22 @@ function GraphAdvancedVisualizer() {
           }}
         >
           Dijkastra All Nodes
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             prims(nodes, edges, visualizerState, setVisualizerState);
           }}
         >
           Prims
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             kruskals(nodes, edges, visualizerState, setVisualizerState);
           }}
         >
           Kruskals
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (startNode)
               topSortAlgo(
@@ -332,8 +397,8 @@ function GraphAdvancedVisualizer() {
           }}
         >
           TopSort
-        </button>
-      </div>
+        </Button>
+      </TopBar>
     );
   }
 }

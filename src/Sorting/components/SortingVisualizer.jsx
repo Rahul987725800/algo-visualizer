@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { generateRandomArray } from '../../utils.js';
+import { generateRandomArray, Debounce } from '../../utils.js';
 import styles from './SortingVisualizer.module.css';
 import {
   bubbleSort,
@@ -11,6 +11,8 @@ import {
   radixSort,
   shellSort,
 } from './algorithms';
+import TopBar from '../../TopBar/TopBar.jsx';
+import Button from '../../shared/Button.jsx';
 
 const HEIGHT_RANGE = {
   min: 5,
@@ -36,22 +38,35 @@ const initialVisualizerState = (numElms) => {
     recursionBlock: Array(numElms).fill(false),
     mergeBlock: Array(numElms).fill(false),
     observed: Array(numElms).fill(false),
-    delay: 500,
+    delay: 100,
     timeOuts: [],
     minIndex: Array(numElms).fill(false),
   };
 };
 function SortingVisualizer() {
   // console.log(testAlgo(shellSort));
-  const [rangeIp, setRangeIp] = useState(100);
-  const [array, setArray] = useState(randomArray(MAX_BARS));
+  const [rangeIp, setRangeIp] = useState(50);
+  const [maxBars, setMaxBars] = useState(MAX_BARS);
+  const [array, setArray] = useState(randomArray(maxBars));
   const [showNumbers, setShowNumbers] = useState(false);
   const [visualizerState, setVisualizerState] = useState(() => {
-    return initialVisualizerState(MAX_BARS);
+    return initialVisualizerState(maxBars);
   });
+  useEffect(() => {
+    const decideLayout = new Debounce(() => {
+      const BARS_TOTAL_WIDTH = (window.innerWidth * 70) / 100;
+      const MAX_BARS = Math.floor(
+        BARS_TOTAL_WIDTH / (MIN_WIDTH_BAR + MARGIN_WIDTH_BAR),
+      );
+      setMaxBars(MAX_BARS);
+    }, 300);
+    decideLayout.call();
+
+    window.onresize = () => decideLayout.call();
+  }, []);
   const [gamePaused, setGamePaused] = useState(false);
 
-  const numElms = (range = rangeIp) => Math.floor((MAX_BARS * range) / 100);
+  const numElms = (range = rangeIp) => Math.floor((maxBars * range) / 100);
 
   const resetArray = () => {
     setArray(randomArray(numElms()));
@@ -72,7 +87,7 @@ function SortingVisualizer() {
 
   useEffect(() => {
     resetArray();
-  }, [rangeIp]);
+  }, [rangeIp, maxBars]);
   useEffect(() => {
     if (gamePaused) {
       for (let timer of visualizerState.timeOuts) {
@@ -85,8 +100,7 @@ function SortingVisualizer() {
     }
   }, [gamePaused]);
   return (
-    <div className={styles.container}>
-      <h2>Sorting Visualizer</h2>
+    <div className="container">
       <div className={styles.visualizerBlock}>
         {array.map((v, i) => (
           <div key={i} className={styles.barWrapper}>
@@ -116,14 +130,31 @@ function SortingVisualizer() {
           </div>
         ))}
       </div>
-      <div className={styles.buttons}>
-        <button onClick={() => setGamePaused(!gamePaused)}>
+      <TopBar header="Sorting Visualizer">
+        <Button onClick={resetArray}>Reset</Button>
+        <Button onClick={() => setGamePaused(!gamePaused)}>
           {gamePaused ? 'Resume' : 'Pause'}
-        </button>
-        <button onClick={resetArray}>
-          {!visualizerState.active ? 'Generate New Array' : 'Reset'}
-        </button>
-        <span>
+        </Button>
+
+        <Button>
+          <label>Speed: </label>
+          <input
+            type="range"
+            value={100 - visualizerState.delay / 10}
+            onChange={(e) => {
+              if (visualizerState.active) {
+                resetArray();
+              }
+              setVisualizerState((vs) => {
+                return {
+                  ...vs,
+                  delay: (100 - e.target.value) * 10,
+                };
+              });
+            }}
+          ></input>
+        </Button>
+        <Button>
           <label>Number of Elements: </label>
           <input
             type="range"
@@ -143,26 +174,9 @@ function SortingVisualizer() {
               }
             }}
           ></input>
-        </span>
-        <span>
-          <label>Speed: </label>
-          <input
-            type="range"
-            value={100 - visualizerState.delay / 10}
-            onChange={(e) => {
-              if (visualizerState.active) {
-                resetArray();
-              }
-              setVisualizerState((vs) => {
-                return {
-                  ...vs,
-                  delay: (100 - e.target.value) * 10,
-                };
-              });
-            }}
-          ></input>
-        </span>
-        <span>
+        </Button>
+
+        <Button>
           <label>Show Numbers: </label>
           <input
             type="checkbox"
@@ -179,8 +193,8 @@ function SortingVisualizer() {
               }
             }}
           ></input>
-        </span>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               mergeSort(
@@ -193,8 +207,8 @@ function SortingVisualizer() {
           }}
         >
           MergeSort
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               bubbleSort(
@@ -207,8 +221,8 @@ function SortingVisualizer() {
           }}
         >
           BubbleSort
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               selectionSort(
@@ -221,8 +235,8 @@ function SortingVisualizer() {
           }}
         >
           SelectionSort
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               quickSort(
@@ -235,8 +249,8 @@ function SortingVisualizer() {
           }}
         >
           QuickSort
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               insertionSort(
@@ -249,8 +263,8 @@ function SortingVisualizer() {
           }}
         >
           InsertionSort
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               radixSort(
@@ -263,8 +277,8 @@ function SortingVisualizer() {
           }}
         >
           RadixSort
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             if (!visualizerState.active) {
               shellSort(
@@ -277,8 +291,8 @@ function SortingVisualizer() {
           }}
         >
           ShellSort
-        </button>
-      </div>
+        </Button>
+      </TopBar>
     </div>
   );
 }

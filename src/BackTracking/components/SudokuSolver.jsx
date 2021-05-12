@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Button from '../../shared/Button';
+import TopBar from '../../TopBar/TopBar';
 import { twoDCopy, genArray } from '../algos/common';
 import { sudokuSolver } from '../algos/sudokuSolver';
 import styles from './SudokuSolver.module.css';
@@ -16,14 +18,14 @@ let sampleBoard = [
 const initialVisualizerState = () => {
   return {
     active: false,
-    delay: 500,
+    delay: 100,
     timeOuts: [],
     correct: genArray(9, 9),
     incorrect: genArray(9, 9),
     trial: genArray(9, 9),
   };
 };
-function SudokuSolver() {
+function SudokuSolver({ setActive }) {
   const [gamePaused, setGamePaused] = useState(false);
   const [visualizerState, setVisualizerState] = useState(() => {
     return initialVisualizerState();
@@ -69,8 +71,7 @@ function SudokuSolver() {
     }
   }, [gamePaused]);
   return (
-    <div>
-      <h3>Sudoku Solver</h3>
+    <div className="container">
       <div>
         <div className={styles.board}>
           {board.map((row, i) => (
@@ -90,29 +91,32 @@ function SudokuSolver() {
             </div>
           ))}
         </div>
-        <div>
-          <button onClick={() => setGamePaused(!gamePaused)}>
+        <TopBar header="Sudoku Solver">
+          <Button onClick={reset}>Reset</Button>
+          <Button onClick={() => setGamePaused(!gamePaused)}>
             {gamePaused ? 'Resume' : 'Pause'}
-          </button>
-          <button onClick={reset}>Reset</button>
-          <label>Speed: </label>
-          <input
-            type="range"
-            max={100}
-            value={100 - visualizerState.delay / 10}
-            onChange={(e) => {
-              if (visualizerState.active) {
-                reset();
-              }
-              setVisualizerState((vs) => {
-                return {
-                  ...vs,
-                  delay: (100 - e.target.value) * 10,
-                };
-              });
-            }}
-          ></input>
-          <button
+          </Button>
+
+          <Button>
+            <label>Speed: </label>
+            <input
+              type="range"
+              max={100}
+              value={100 - visualizerState.delay / 10}
+              onChange={(e) => {
+                if (visualizerState.active) {
+                  reset();
+                }
+                setVisualizerState((vs) => {
+                  return {
+                    ...vs,
+                    delay: (100 - e.target.value) * 10,
+                  };
+                });
+              }}
+            ></input>
+          </Button>
+          <Button
             onClick={() => {
               if (!visualizerState.active) {
                 sudokuSolver(
@@ -125,8 +129,9 @@ function SudokuSolver() {
             }}
           >
             Start
-          </button>
-        </div>
+          </Button>
+          <Button onClick={() => setActive('nqueen')}>NQueen Solver</Button>
+        </TopBar>
       </div>
     </div>
   );

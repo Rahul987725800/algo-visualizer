@@ -2,9 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './GraphVisualizer.module.css';
 import sourceIcon from '../../icons/triangletwo-right.svg';
 import destinationIcon from '../../icons/circle.svg';
-import { point, pointEq, twoDCopy } from '../algos/common.js';
+import { point, pointEq } from '../algos/common.js';
 import { breathFirstSearch } from '../algos/breathFirstSearch';
 import { deapthFirstSearch } from '../algos/deapthFirstSearch';
+import { Debounce, twoDCopy } from '../../utils';
+import TopBar from '../../TopBar/TopBar';
+import Button from '../../shared/Button';
 const TOTAL_WIDTH = Math.floor((window.innerWidth * 80) / 100);
 const TOTAL_HEIGHT = Math.floor((window.innerHeight * 62) / 100);
 const WIDTH_PER_BLOCK = 24;
@@ -12,19 +15,20 @@ const COLUMNS = Math.floor(TOTAL_WIDTH / WIDTH_PER_BLOCK);
 const ROWS = Math.floor(TOTAL_HEIGHT / WIDTH_PER_BLOCK);
 // console.log(ROWS);
 // console.log(COLUMNS);
-function genArray() {
+function genArray(ROWS, COLUMNS) {
   let arr = [];
   for (let i = 0; i < ROWS; i++) {
     arr.push(Array(COLUMNS).fill(false));
   }
+  // console.log(arr);
   return arr;
 }
-const initialVisualizerState = () => {
+const initialVisualizerState = (arr) => {
   return {
     active: false,
-    pathTraversed: genArray(),
-    backTrack: genArray(),
-    delay: 500,
+    pathTraversed: twoDCopy(arr),
+    backTrack: twoDCopy(arr),
+    delay: 100,
     timeOuts: [],
     runAlgo: '',
   };
@@ -33,13 +37,13 @@ const initialVisualizerState = () => {
 function GraphVisualizer() {
   const [gamePaused, setGamePaused] = useState(false);
   const [visualizerState, setVisualizerState] = useState(() => {
-    return initialVisualizerState();
+    return initialVisualizerState(genArray(ROWS, COLUMNS));
   });
   const [source, setSource] = useState(() => point(0, 0));
   const [destination, setDestination] = useState(() =>
     point(ROWS - 1, COLUMNS - 1),
   );
-  const [wall, setWall] = useState(() => genArray());
+  const [wall, setWall] = useState(() => genArray(ROWS, COLUMNS));
   const [mouseOn, setMouseOn] = useState();
   const [curBlock, setCurBlock] = useState();
   const [prevWall, setPrevWall] = useState();
@@ -49,7 +53,7 @@ function GraphVisualizer() {
       timer.clear();
     }
     setVisualizerState((vs) => ({
-      ...initialVisualizerState(),
+      ...initialVisualizerState(genArray(ROWS, COLUMNS)),
       delay: vs.delay,
     }));
   };
@@ -62,16 +66,24 @@ function GraphVisualizer() {
     if (visualizerState.pathTraversed[i][j]) return 'rgba(0, 217, 159, 0.75)';
     if (visualizerState.backTrack[i][j]) return 'rgb(255, 254, 106)';
   };
-  const args = [
-    ROWS,
-    COLUMNS,
-    source,
-    destination,
-    wall,
-    visualizerState,
-    setVisualizerState,
-  ];
 
+  useEffect(() => {
+    const decideLayout = new Debounce(() => {
+      const TOTAL_WIDTH = Math.floor((window.innerWidth * 80) / 100);
+      const TOTAL_HEIGHT = Math.floor((window.innerHeight * 62) / 100);
+      const COLUMNS = Math.floor(TOTAL_WIDTH / WIDTH_PER_BLOCK);
+      const ROWS = Math.floor(TOTAL_HEIGHT / WIDTH_PER_BLOCK);
+      setWall(genArray(ROWS, COLUMNS));
+      setDestination(point(ROWS - 1, COLUMNS - 1));
+      setVisualizerState((vs) => ({
+        ...initialVisualizerState(genArray(ROWS, COLUMNS)),
+        delay: vs.delay,
+      }));
+      console.log('called');
+    }, 300);
+    decideLayout.call();
+    window.onresize = () => decideLayout.call();
+  }, []);
   useEffect(() => {
     const srcAndDest = () => {
       if (prevWall) {
@@ -140,8 +152,7 @@ function GraphVisualizer() {
     }
   }, [gamePaused]);
   return (
-    <div className={styles.container}>
-      <h2>Graph Visualizer</h2>
+    <div className="container">
       <div>
         <div
           className={styles.grid}
@@ -161,7 +172,7 @@ function GraphVisualizer() {
           onMouseLeave={mouseLeaveOrUp}
           onMouseUp={mouseLeaveOrUp}
         >
-          {genArray().map((row, i) => (
+          {wall.map((row, i) => (
             <div key={i} className={styles.row}>
               {row.map((_, j) => (
                 <div
@@ -178,11 +189,14 @@ function GraphVisualizer() {
             </div>
           ))}
         </div>
-        <div>
-          <button onClick={() => setGamePaused(!gamePaused)}>
-            {gamePaused ? 'Resume' : 'Pause'}
-          </button>
-          <label>Speed: </label>
+      </div>
+      <TopBar header="Graph Visualizer">
+        <Button onClick={reset}>Reset</Button>
+        <Button onClick={() => setGamePaused(!gamePaused)}>
+          {gamePaused ? 'Resume' : 'Pause'}
+        </Button>
+        <Button>
+          <label>Speed:</label>
           <input
             type="range"
             max={95}
@@ -199,27 +213,45 @@ function GraphVisualizer() {
               });
             }}
           ></input>
-          <button onClick={reset}>Reset</button>
-          <button
-            onClick={() => {
-              if (!visualizerState.active) {
-                breathFirstSearch(...args, true);
-              }
-            }}
-          >
-            BreathFirstSearch
-          </button>
-          <button
-            onClick={() => {
-              if (!visualizerState.active) {
-                deapthFirstSearch(...args, true);
-              }
-            }}
-          >
-            DeapthFirstSearch
-          </button>
-        </div>
-      </div>
+        </Button>
+
+        <Button
+          onClick={() => {
+            if (!visualizerState.active) {
+              breathFirstSearch(
+                wall.length,
+                wall[0].length,
+                source,
+                destination,
+                wall,
+                visualizerState,
+                setVisualizerState,
+                true,
+              );
+            }
+          }}
+        >
+          BreathFirstSearch
+        </Button>
+        <Button
+          onClick={() => {
+            if (!visualizerState.active) {
+              deapthFirstSearch(
+                wall.length,
+                wall[0].length,
+                source,
+                destination,
+                wall,
+                visualizerState,
+                setVisualizerState,
+                true,
+              );
+            }
+          }}
+        >
+          DeapthFirstSearch
+        </Button>
+      </TopBar>
     </div>
   );
 }

@@ -1,11 +1,6 @@
-.container {
-  text-align: center;
-  width: 80%;
-  margin: auto;
-}
 .visualizerBlock {
   height: 70vh;
-  overflow: scroll;
+  overflow: auto;
   border: 1px solid blue;
   display: flex;
   align-items: flex-end;
@@ -21,12 +16,4 @@
 }
 .number {
   height: 4vh;
-}
-.buttons {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.buttons button {
-  margin: 1rem;
 }

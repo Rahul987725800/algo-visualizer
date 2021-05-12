@@ -4,6 +4,8 @@ import crownIcon from '../../icons/crown.png';
 import { randomIntBetween } from '../../utils';
 import { nQueenSolver } from '../algos/nQueenSolver';
 import { genArray } from '../algos/common';
+import TopBar from '../../TopBar/TopBar';
+import Button from '../../shared/Button';
 
 const generateSampleSolution = (n) => {
   const solutions = [];
@@ -21,11 +23,11 @@ const generateSampleSolution = (n) => {
 const initialVisualizerState = () => {
   return {
     active: false,
-    delay: 500,
+    delay: 100,
     timeOuts: [],
   };
 };
-function NQueens() {
+function NQueens({ setActive }) {
   const [gamePaused, setGamePaused] = useState(false);
   // generateSampleSolution(4)
   const [n, setN] = useState(4);
@@ -59,14 +61,14 @@ function NQueens() {
     }
   }, [gamePaused]);
   return (
-    <div>
-      <h3>NQueen's Solutions</h3>
-      <div>
-        <div>
-          <button onClick={() => setGamePaused(!gamePaused)}>
-            {gamePaused ? 'Resume' : 'Pause'}
-          </button>
-          <button onClick={reset}>Reset</button>
+    <div className="container">
+      <TopBar header="NQueen Solver">
+        <Button onClick={reset}>Reset</Button>
+        <Button onClick={() => setGamePaused(!gamePaused)}>
+          {gamePaused ? 'Resume' : 'Pause'}
+        </Button>
+
+        <Button>
           <label>Speed: </label>
           <input
             type="range"
@@ -84,7 +86,9 @@ function NQueens() {
               });
             }}
           ></input>
-          <label>Board</label>
+        </Button>
+        <Button>
+          <label>Board - N x N : </label>
           <input
             type="number"
             value={n}
@@ -92,31 +96,32 @@ function NQueens() {
               setN(+e.target.value);
             }}
           ></input>
-          <button
-            onClick={() => {
-              if (!visualizerState.active) {
-                nQueenSolver(
-                  n,
-                  setSolutions,
-                  visualizerState,
-                  setVisualizerState,
-                );
-              }
-            }}
-          >
-            Start
-          </button>
-        </div>
+        </Button>
+        <Button
+          onClick={() => {
+            if (!visualizerState.active) {
+              nQueenSolver(
+                n,
+                setSolutions,
+                visualizerState,
+                setVisualizerState,
+              );
+            }
+          }}
+        >
+          Start
+        </Button>
+        <Button onClick={() => setActive('sudoku')}>Sudoku Solver</Button>
+      </TopBar>
+      <div>
         <div>
           <div>
-            <div>
-              <Solution solution={solutions[solutions.length - 1]} n={n} />
-            </div>
-            <div className={styles.solutions}>
-              {solutions.slice(0, solutions.length - 1).map((solution, k) => (
-                <Solution key={k} solution={solution} n={n} />
-              ))}
-            </div>
+            <Solution solution={solutions[solutions.length - 1]} n={n} />
+          </div>
+          <div className={styles.solutions}>
+            {solutions.slice(0, solutions.length - 1).map((solution, k) => (
+              <Solution key={k} solution={solution} n={n} />
+            ))}
           </div>
         </div>
       </div>
